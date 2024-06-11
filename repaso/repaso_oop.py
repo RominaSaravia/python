@@ -1,11 +1,14 @@
 class Sello():
     contador = 0
 
-    def __init__(self,nombre,esp):
+    def __init__(self,nombre:str,esp:str,mat:int):
         print('Nuevo Sello')
         self.nombre = nombre
         self.especialidad = esp
-        self.matricula = Sello.contador
+        self.validarMatricula(mat)
+
+        self.matricula = mat
+        self.ID = Sello.contador
         Sello.contador = Sello.contador + 1
 
     def getNombre(self):
@@ -16,6 +19,10 @@ class Sello():
 
     def estampar(self):
         print(f'------\n- {self.nombre} \n- {self.matricula} \n------\n')
+    
+    def validarMatricula(self,n_matricula):
+        if not isinstance(n_matricula,int):
+            raise Exception('Matricula no es valida');
 
     def miMetodo(self,num1,num2):
         if num1 > num2:
@@ -24,8 +31,8 @@ class Sello():
             return num2
 
 
-miObj = Sello("AA","a")
-miObj2 = Sello("BB","b")
+miObj = Sello("AA","Programador",123)
+miObj2 = Sello("BB","Analista",213)
 
 
 miObj.getNombre()
