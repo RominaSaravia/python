@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from validations import Product
 
 app = FastAPI()
 
@@ -33,63 +34,68 @@ async def root(num1:int, num2:int):
    
     return f'El resultado es: {result}'
 
-#################
+#############-----------------------------------
+
 products = [
-    {"id":1,
-        "nombre": "mouse",
-     "category": "computacion"
-    },
-    {"id":2,
-        "nombre": "leche Tetra",
-     "category": "lacteos"
-     }
 
 ]
 
-def filtrarPorCategoria(listaProductos):
+######  Funciones  #######
+
+def filtrarPorCategoria( listaProductos, _category):
     prodFiltrados = []
     for x in listaProductos:
-        if (x["category"] == "lacteos"):
+        if (x.category == _category):
             prodFiltrados.append(x)
-        else:
-            pass
     
     return prodFiltrados
 
 def filtrarPorId(listaProductos, _id):
-    outPut = []
     for x in listaProductos:
-        if (x["id"] == _id):
-            outPut.append(x)
+        if (x.id == _id):
+            return x
         else:
             pass
+
+
+def validarId(listaProductos, _id):
+    for p in listaProductos:
+        if p.id == _id:
+            return False
     
-    return outPut
+    return True
 
 
-
+#### Queries ####
 
 @app.post("/productos")
-async def root(product:dict ):
-    print("Los datos del producto son:", product)
-    products.append(product)
+async def root(newProduct:Product ):
+    if(validarId(products, newProduct.id)):
+        products.append(newProduct)
+        return {'message: Se creo producto'}
+    else:
+        return {'message: ID no valido'}
 
-    return {'message: Se creo producto'}
+    
 
 @app.get("/productos")
-async def root():
+async def root() -> list[Product]:
     return products
 
-@app.get("/productos/{category}")
-async def root(category:str):
-    print(f'Se filta por la categoria {category}')
-    return filtrarPorCategoria(products)
+@app.get("/productos/{_category}")
+async def root(_category:str) -> list[Product]:
+    return filtrarPorCategoria(products, _category)
 
 
 @app.get("/producto/{id}")
-async def root(id:int):
-    
+async def root(id:int) -> Product:
     return filtrarPorId(products,id)
+
+
+        
+
+
+
 
 
 
