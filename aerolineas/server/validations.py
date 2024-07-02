@@ -24,6 +24,8 @@ class Ticket(BaseModel):
     p:Passenger
     f:Flight
 
-
+class User_Credntial(BaseModel):
+    username:str
+    password:str
 
 
