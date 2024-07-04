@@ -19,6 +19,14 @@ class Flight(BaseModel):
     origin: Code_Country
     takeoff_date:str
 
+class Flights(BaseModel):
+    destination:Code_Country
+    origin: Code_Country
+    takeoff_date:str
+    flight_code: str
+    gate:str
+
+
 class Ticket(BaseModel):
     id:int | None = None
     p:Passenger
@@ -27,5 +35,4 @@ class Ticket(BaseModel):
 class User_Credntial(BaseModel):
     username:str
     password:str
-
 

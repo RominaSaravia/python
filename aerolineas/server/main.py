@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import FastAPI,Request, Response, Cookie
 from fastapi.responses import HTMLResponse
-from validations import Ticket,Passenger,Flight,Code_Country,User_Credntial
+from validations import Ticket,Passenger,Flight,Code_Country,User_Credntial,Flights
 from controller import filterById,auth_user
 
 app = FastAPI()
@@ -12,6 +12,13 @@ ListTickets = [
         p = Passenger( id_document=48651567,name="Martha",surname="Smith",email="martha.smith@gmail.com",birth_date="12/01/2024"),
         f = Flight( destination = "ARG",origin="BRA",takeoff_date="12/01/2024")
     )
+]
+
+ListFlight = [
+    Flights(destination = "ARG",origin="BRA",takeoff_date="12/01/2024",flight_code="253ARE",gate="02R"),
+    Flights(destination = "CHI",origin="ARG",takeoff_date="12/01/2024",flight_code="244CAA",gate="05R"),
+    Flights(destination = "ARG",origin="URU",takeoff_date="12/01/2024",flight_code="223DTR",gate="11R")
+
 ]
 
 credentials = {
@@ -85,6 +92,10 @@ async def delete_ticket(id:int,ti:Ticket):
         
     return {"message": "NOT FOUND"}
 
+### -------------Flights ----------------------------
+@app.get("/flights")
+async def get_flights():
+    return ListFlight
 
 
 #### ------------COOKIES---------------------
