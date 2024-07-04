@@ -37,6 +37,7 @@ async def read_items():
     """
     return HTMLResponse(content=html_content, status_code=200)
 
+#-------------TICKETS----------------------
 
 @app.post("/ticket") # Buy Ticket
 async def post_tickets(ticket:Ticket, req: Request, res:Response):
@@ -48,10 +49,9 @@ async def post_tickets(ticket:Ticket, req: Request, res:Response):
         return {'message: Se creo producto'}
     else:
         #Indicate to log first
-        res.status_code = 404
+        res.status_code = 401
         return {'message: Necesita estar logeado'}  
     
-
 
 @app.get("/ticket")
 async def get_tickets():
@@ -62,8 +62,33 @@ async def get_ticket_byId(id:int):
     return filterById(id,ListTickets)
 
 
+@app.patch("/ticket/{id}")
+async def patch_ticket(id:int,ti:Ticket):
+    selected = Ticket
+    for x in ListTickets:
+        if x.id == id:
+            selected = x
+            index = ListTickets.index(selected)
+            ListTickets[index] = ti
+            return {"message": "Ticket updated"}
+        
+    return {"message": "NOT FOUND"}
 
-#### -----------------------
+
+@app.delete("/ticket/{id}")
+async def delete_ticket(id:int,ti:Ticket):
+    for x in ListTickets:
+        if x.id == id:
+            selected = x
+            ListTickets.remove(selected)
+            return {"message": "Ticket deleted"}
+        
+    return {"message": "NOT FOUND"}
+
+
+
+#### ------------COOKIES---------------------
+
 @app.get("/set_cookie")
 async def post_cookie(res: Response):
     res.set_cookie('my_cookie','COOKIE')
