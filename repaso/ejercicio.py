@@ -1,4 +1,3 @@
-#1
 class Vehiculo():
     def __init__(self,color:str, patente:str, velocidad:int):
         self.color = color
