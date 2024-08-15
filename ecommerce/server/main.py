@@ -36,11 +36,24 @@ def create_product(product: Product):
         return product
 
 
+# @app.get("/products")
+# def read_products():
+#     with Session(engine) as session:
+#         products = session.exec(select(Product)).all()
+#         return products
+
+#Filter by name
 @app.get("/products")
-def read_products():
+async def get_products(search:str):
     with Session(engine) as session:
-        products = session.exec(select(Product)).all()
+        products = None
+        if(search != None):
+            products = session.exec(select(Product).where(Product.name.like('%'+ search + '%'))).all()
+        else:
+            products = session.exec(select(Product)).all()
+                
         return products
+
     
 @app.delete("/product/{id}")
 def delete_product(id:int):
@@ -48,6 +61,8 @@ def delete_product(id:int):
         result = session.exec(delete(Product).where(Product.id == id))
         session.commit()
         return result
+    
+
 
 
 #### ------------COOKIES---------------------
