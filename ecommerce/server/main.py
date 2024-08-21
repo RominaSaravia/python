@@ -1,9 +1,11 @@
 from typing import Annotated
 from fastapi import FastAPI,Request, Response, Cookie
-from fastapi.responses import HTMLResponse
 from sqlmodel import Session,select,delete
-from db import Product,create_db_and_tables,engine
+from db import Product,create_db_and_tables,engine,readAllProducts,createNewProduct,deleteProduct
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -11,6 +13,14 @@ app = FastAPI()
 def on_startup():
     create_db_and_tables()
 
+
+
+templates = Jinja2Templates(directory="server/templates")
+@app.get("/seeproducts", response_class=HTMLResponse)
+async def read_item(request: Request,search:str=''):
+    return templates.TemplateResponse(
+        request=request, name="index.html", context={"productsList": readAllProducts(search)}
+    )
 
 @app.get("/",response_class=HTMLResponse)
 async def read_items():
@@ -29,11 +39,7 @@ async def read_items():
 
 @app.post("/product")
 def create_product(product: Product):
-    with Session(engine) as session:
-        session.add(product)
-        session.commit()
-        session.refresh(product)
-        return product
+    return createNewProduct(product)
 
 
 # @app.get("/products")
@@ -44,23 +50,13 @@ def create_product(product: Product):
 
 #Filter by name
 @app.get("/products")
-async def get_products(search:str):
-    with Session(engine) as session:
-        products = None
-        if(search != None):
-            products = session.exec(select(Product).where(Product.name.like('%'+ search + '%'))).all()
-        else:
-            products = session.exec(select(Product)).all()
-                
-        return products
+async def get_products(search:str):             
+    return readAllProducts(search) 
 
     
 @app.delete("/product/{id}")
 def delete_product(id:int):
-    with Session(engine) as session:
-        result = session.exec(delete(Product).where(Product.id == id))
-        session.commit()
-        return result
+    return deleteProduct(id)
     
 
 
