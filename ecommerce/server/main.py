@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import FastAPI,Request, Response, Cookie
 from sqlmodel import Session,select,delete
-from db import Product,create_db_and_tables,engine,readAllProducts,createNewProduct,deleteProduct
+from db import Product,Carts,create_db_and_tables,engine,readAllProducts,createNewProduct,deleteProduct,getCart,createCartProduct
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -74,5 +74,19 @@ async def authenticate(body:dict, res:Response):
 async def get_cookie(my_var: Request):
     print(f'Cookie: {my_var._cookies}')
     return my_var._cookies
+
+
+############# Carrito #################
+@app.post("/cart")
+async def add_to_cart(cart:Carts):
+    print(f'cart creado')
+    return createCartProduct(cart)
+
+
+@app.get("/cart/{userId}")
+async def get_cart_by_user(userId:int):
+    print(f'producto agregado al carrito del usuario "{userId}" --> id producto: ', userId)
+    carrito = getCart(userId)
+    return carrito
 
 

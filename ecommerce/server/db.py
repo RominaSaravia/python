@@ -6,6 +6,19 @@ class Product(SQLModel, table=True):
     name: str = Field(index=True)
     description: str
     price: float | None = Field(default=None, index=True)
+    img_url: str = ''
+
+class Users(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
+    first_name: str
+    last_name: str
+    email: str
+
+class Carts(SQLModel, table=True):
+    id: int =  Field(default=None, primary_key=True)
+    user_id: int = Field(default=None, foreign_key="users.id")
+    product_id: int = Field(default=None, foreign_key="product.id")
+    amount: int  # se envía en cada request de POST /cart
 
 
 sqlite_file_name = "database.db"
@@ -40,3 +53,25 @@ def deleteProduct(id:int):
         result = session.exec(delete(Product).where(Product.id == id))
         session.commit()
         return result
+
+
+def getCart(userId:int):
+    with Session(engine) as session:
+        cart = session.exec(  select(Carts,Product).where(Carts.product_id == Product.id).where(Carts.user_id == userId)  )
+        print('****************************')
+        cartProducts = []
+        for c, p in cart:
+            auxProduct = dict(p)
+            auxProduct['amount'] = c.amount
+            cartProducts.append(auxProduct)
+            print(' auxProduct ---> ', auxProduct)
+        return cartProducts
+
+    
+
+def createCartProduct(cart:dict):
+    with Session(engine) as session:
+        session.add(cart)
+        session.commit()
+        session.refresh(cart)
+        return cart
