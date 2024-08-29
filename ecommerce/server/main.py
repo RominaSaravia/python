@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import FastAPI,Request, Response, Cookie
 from sqlmodel import Session,select,delete
-from db import Product,Carts,create_db_and_tables,engine,readAllProducts,createNewProduct,deleteProduct,getCart,createCartProduct
+from db import Product,Carts,create_db_and_tables,engine,readAllProducts,createNewProduct,deleteProduct,getCart,upsertCartProduct,deleteCartProduct
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -20,6 +20,12 @@ templates = Jinja2Templates(directory="server/templates")
 async def read_item(request: Request,search:str=''):
     return templates.TemplateResponse(
         request=request, name="index.html", context={"productsList": readAllProducts(search)}
+    )
+
+@app.get("/seecart/{userID}", response_class=HTMLResponse)
+async def read_item(request: Request,userID:int):
+    return templates.TemplateResponse(
+        request=request, name="cart.html", context={"cartDetails": getCart(userID)}
     )
 
 @app.get("/",response_class=HTMLResponse)
@@ -78,9 +84,13 @@ async def get_cookie(my_var: Request):
 
 ############# Carrito #################
 @app.post("/cart")
-async def add_to_cart(cart:Carts):
-    print(f'cart creado')
-    return createCartProduct(cart)
+async def add_to_cart(cartProduct:dict):
+    print(f'*****************************')
+    if(cartProduct['amount'] == 0):
+        return deleteCartProduct(cartProduct['user_id'],cartProduct['product_id'])
+    else:
+        print(f'cart created')
+        return upsertCartProduct(cartProduct['user_id'],cartProduct['product_id'],cartProduct['amount'])
 
 
 @app.get("/cart/{userId}")

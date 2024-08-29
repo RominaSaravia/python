@@ -69,9 +69,29 @@ def getCart(userId:int):
 
     
 
-def createCartProduct(cart:dict):
+def upsertCartProduct(userId, productId, amount):
     with Session(engine) as session:
-        session.add(cart)
+        cartProduct = session.exec( select(Carts)
+                                .where(Carts.user_id == userId)         # WHERE cart.user_id = userId
+                                .where(Carts.product_id == productId)   # AND cart.product_id = productId 
+                                ).first()
+    
+        if(cartProduct == None): # si el producto no se encuentra en el carrito...
+            cartProduct = Carts(user_id=userId,product_id=productId,amount=amount) # creo nuevo registro del carrito
+        else:   # si ya se encuentra en el carrito...
+            cartProduct.amount = amount   # sobrescribo el valor de cantidad (amount)
+
+        session.add(cartProduct)
         session.commit()
-        session.refresh(cart)
-        return cart
+        session.refresh(cartProduct)
+        return cartProduct
+    
+
+def deleteCartProduct(userId, productId):
+    with Session(engine) as session:
+        result = session.exec( delete(Carts)
+                                .where(Carts.user_id == userId)         # WHERE cart.user_id = userId
+                                .where(Carts.product_id == productId)   # AND cart.product_id = productId 
+                                )
+        session.commit()
+        return result
