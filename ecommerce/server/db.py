@@ -13,6 +13,7 @@ class Users(SQLModel, table=True):
     first_name: str
     last_name: str
     email: str
+    password:str
 
 class Carts(SQLModel, table=True):
     id: int =  Field(default=None, primary_key=True)
@@ -79,7 +80,7 @@ def upsertCartProduct(userId, productId, amount):
         if(cartProduct == None): # si el producto no se encuentra en el carrito...
             cartProduct = Carts(user_id=userId,product_id=productId,amount=amount) # creo nuevo registro del carrito
         else:   # si ya se encuentra en el carrito...
-            cartProduct.amount = amount   # sobrescribo el valor de cantidad (amount)
+            cartProduct.amount = cartProduct.amount + 1   # sobrescribo el valor de cantidad (amount)
 
         session.add(cartProduct)
         session.commit()
@@ -95,3 +96,17 @@ def deleteCartProduct(userId, productId):
                                 )
         session.commit()
         return result
+
+
+def authUser(attempEmail,attempPassword):
+    with Session(engine) as session:
+        user = session.exec( select(Users.id).where(Users.email == attempEmail).where(Users.password == attempPassword) ).first()
+
+    if user != None:
+        return user
+    
+    return None
+
+    
+        
+
