@@ -1,4 +1,5 @@
 from typing import Annotated
+from starlette.responses import RedirectResponse
 from fastapi import FastAPI,Request, Response, Cookie, Form
 from sqlmodel import Session,select,delete
 from db import Product,Carts,create_db_and_tables,engine,readAllProducts,createNewProduct,deleteProduct,getCart,upsertCartProduct,deleteCartProduct,authUser
@@ -15,9 +16,9 @@ def on_startup():
 
 
 @app.get("/login", response_class=HTMLResponse)
-async def read_item(request: Request, res:Response): 
+async def get_login(request: Request, res:Response): 
     return templates.TemplateResponse(
-        request=request, name="login.html", context={}
+        request=request, name="login.html", context={}      
     )
 
 
@@ -47,8 +48,13 @@ async def read_item(request: Request, res:Response):
 
 @app.get("/",response_class=HTMLResponse)
 async def home(request: Request):
+    userId = validateAuth(request._cookies)
+    loggedUser = False;
+    if userId != False:
+        loggedUser = True
+
     return templates.TemplateResponse(
-        request=request, name="home.html", context={}
+        request=request, name="home.html", context={"logged": loggedUser}
     )
 
 
@@ -104,10 +110,17 @@ async def authenticate( res:Response, userId:int=1):
 
 
 @app.get("/read_cookie")
-async def get_cookie(my_var: Request):
-    print(f'Cookie: {my_var._cookies}')
-    userId = validateAuth(my_var._cookies)
+async def get_cookie(request: Request):
+    print(f'Cookie: {request._cookies}')
+    userId = validateAuth(request._cookies)
     return userId
+
+@app.get("/delete_cookie", response_class=RedirectResponse)
+async def delete_cookie()->RedirectResponse :
+    redirect = app.url_path_for('get_login')
+    redirectR = RedirectResponse(url='/login')
+    redirectR.delete_cookie('cookieUserId')
+    return redirectR
 
 
 #### ------------ Carrito --------------------------
