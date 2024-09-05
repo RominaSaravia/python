@@ -6,16 +6,23 @@
     <title>Document</title>
 </head>
 <body>
+    {% if logged %}
     <h2>Welcome :)</h2>
+    <p>Ver productos</p>
+    <button type="button" onclick="redirectTo('seeproducts')">login</button>
+    <p>Ver carrito</p>
+    <button type="button" onclick="redirectTo('seecart')">login</button>
+    {% else %}
     <p>Primero tienes que logearte</p>
-    <button type="button" onclick="redirectTo()">login</button>
+    <button type="button" onclick="redirectTo('login')">login</button>
+    {% endif %}
     
 </body>
 
 <script>
-    function redirectTo(){
+    function redirectTo(urlParam){
         console.log("click")
-        location.href = "/login"
+        location.href = "/" + urlParam
     }
 
 </script>

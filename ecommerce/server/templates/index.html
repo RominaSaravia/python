@@ -7,18 +7,20 @@
 </head>
 <body>
     {% for p in productsList %}
-    <div>
+    <div class="productDetails">
         <h2>{{p.name}}</h2>
-        <img src={{p.img_url}} alt="">
+        <img src={{p.img_url}} alt="{{p.name}}">
         <p>{{p.description}}</p>
-        <p>{{p.price}}</p>
-        <button onclick="addToCart( {{p.id}} )">
+        <p>$ {{p.price}}</p>
+        <button  onclick="addToCart( {{p.id}} )">
             Add to Cart
         </button>
     </div>
     {% endfor %}
     
 </body>
+
+{% include 'footer.html' %}
 
 <script>
     function addToCart(productId){
@@ -41,4 +43,38 @@
         })
     }
 </script>
+
+<style>
+    img{
+        width: 5rem;
+        height: auto;
+    }
+
+    .productDetails {    
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    }
+    p {
+        text-align: left;
+    }
+    button{
+    background-color: #0452aa;
+    border: none;
+    color: white;
+    padding: 1.1rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1rem;
+    transition-duration: 0.4s;
+    }
+
+    button:hover {
+        background-color: #0b1d31;
+        color: white;
+    }
+</style>
 </html>

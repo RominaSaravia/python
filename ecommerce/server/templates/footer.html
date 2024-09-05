@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+    <div>
+        <button class="logout" onclick="logOut()" >log out</button>
+    </div>
+</body>
+
+<script>
+    function logOut(){
+        console.log("+++++++++++++++++++++++")
+        
+        fetch("/delete_cookie" , {
+            method: "GET"
+
+        }).then(function(data){
+            if(data.redirected){
+                location.href = data.url
+            }
+
+        })
+    }
+
+
+</script>
+
+<style>
+
+    .logout{
+    background-color: #aa0404;
+    border: none;
+    color: white;
+    padding: 1.1rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1rem;
+    transition-duration: 0.4s;
+    }
+
+    .logout:hover {
+        background-color: #1f0244;
+        color: white;
+    }
+</style>
+
+</html>
