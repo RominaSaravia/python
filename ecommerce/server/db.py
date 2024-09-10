@@ -1,5 +1,8 @@
 from sqlmodel import Field, Session, SQLModel, create_engine, select,delete
+from dotenv import load_dotenv
+import os
 
+load_dotenv('.env')
 
 class Product(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -22,10 +25,8 @@ class Carts(SQLModel, table=True):
     amount: int  # se envía en cada request de POST /cart
 
 
-sqlite_file_name = "database.db"
-sqlite_url = f"postgresql://admin:Xu1oq7zpOpLVcP4oXvneCguhETN5xvhC@dpg-crd24ud2ng1s73fn7j8g-a.oregon-postgres.render.com/aerolinea"
+sqlite_url = os.getenv('DB_URL')
 
-connect_args = {"check_same_thread": False}
 engine = create_engine(sqlite_url, echo=True)
 
 
